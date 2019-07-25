@@ -1,0 +1,34 @@
+html,body{-webkit-appearance: none;width:100%;height:100%;margin:0;padding:0;background:white;color:var(--bodyTXcolor);font-family: 'Montserrat', sans-serif;}
+#login-logo{    
+	width: 40vw;
+    height: auto;
+    overflow: hidden;
+    text-align: center;
+    padding-top: 5vh;
+    margin: 0 auto;}
+#login-logo img{max-width:100%;}
+#back{color: white;
+background: #DA2C43;
+position: fixed;
+top: 1%;
+right: 1%;
+font-size: 300%;
+text-align: center;
+font-weight: bolder;
+padding: 0px 10px 10px 10px;
+border-radius: 5px 0px 5px 5px;}
+input, select{-webkit-appearance: none;width:100%;height: 7vw;margin-bottom:20px;color:white;background:#18518f;border-color:#019498;font-size:5vw;font-weight:bold;border-radius:5px;font-family: 'Raleway', sans-serif;}
+input[type=text],input[type=password],input[type=tel]{padding-left:5%;width:90%;background:var(--bodyBGcolor);color:var(--bodyTXcolor);border:1px solid var(--bordercolor);}
+select{background: var(--bodyBGcolor);
+color: var(--bodyTXcolor);
+border: 1px solid var(--bodyTXcolor);
+width: 96%;
+height: 8vw;}
+input::-webkit-input-placeholder {color: #9a9a9a!important;}
+a{text-decoration:none;color:inherit;}
+#WaitIcon{width:100%;height:100%;text-align:center;background:url('../img/trans.png');position:fixed;top:0;left:0;}
+#WaitIcon img{width:30%;margin-top:65%;}
+.login-msg{width:97%;height:auto;padding:10px 10px;margin-bottom:20px;color:var(--bodyBGcolor);background:var(--bodyTXcolor);font-size:100%;}
+.login-form{width:70vw;margin:20vh auto;text-align:center;}
+#registration{margin: 5vw auto}
+.hidden{display:none;}
