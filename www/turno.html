@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html>
+	<head>
+    <meta charset="utf-8">
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <meta name="viewport" content="width=device-width">
+    <script type="text/javascript" src="cordova.js"></script>
+       
+    <!--Import Google Icon Font-->
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+	<link href="css/simplelogin.css" rel="stylesheet" type="text/css" />
+    <link href="css/home.css" rel="stylesheet" type="text/css" />
+    <style type='text/css'>:root {--bodyBGcolor: #ffffff;--bodyTXcolor: #000000;--bordercolor:#019498;}</style>
+    <link href="css/turno.css" rel="stylesheet" type="text/css" />
+	<script src="js/simplelogin.js"></script>   
+    <!-- Add the slick-theme.css if you want default styling -->
+    <link rel="stylesheet" type="text/css" href="slick/slick.css"/>
+    <!-- Add the slick-theme.css if you want default styling -->
+    <link rel="stylesheet" type="text/css" href="slick/slick-theme.css"/>
+  </head>
+  <body>
+    <div id='main' >
+        <div role="divigation" style="height: 0%;">
+            <div id="menuToggle">
+              <input id="togglecheck" type="checkbox" />
+              <span></span>
+              <span></span>
+              <span></span>
+              <ul id="menu">
+                <a href="home.html"><li>Inicio</li></a>
+                <a href="#"><li>About</li></a>
+                <a href="#"><li>Info</li></a>
+                <a href="#" onclick="user.signOut()" ><li>Cerrar Sesión</li></a>
+              </ul>
+            </div>
+        </div>
+        <div class="contenido">
+            <h2 class="titulo">Nuevo Turno</h2>
+            <div id="categoria">
+                <div style="height: 4vh;">
+                    <label for="filtrocategoria" style="float:left; margin:1vw 4vw;">Selecciona una Categoría</label>
+                    <i target="categoria" class="material-icons showfiltro">search</i>
+                </div>
+                <input class="filtro" placeholder="Buscar categoría" type="text" id='filtrocategoria'>
+                <div id="contCatego" class="categoria">
+                </div>
+            </div>
+            <div id="subcategoria">
+                <div style="height: 4vh;">
+                    <label for="filtrosubcategoria" style="float:left; margin:1vw 4vw;">Selecciona una Subcategoría</label>
+                    <i target="subcategoria" class="material-icons showfiltro">search</i>
+                </div>
+                <input class="filtro" placeholder="Buscar subcategoría" type="text" id='filtrosubcategoria'>
+                <div id="contSubCatego" class="subcategoria">
+                </div>
+                
+            </div>
+            <div id="establecimiento">
+                <div style="height: 4vh;">
+                    <label for="filtroestablecimiento" style="float:left; margin:1vw 4vw;">Selecciona un establecimiento</label>
+                    <i target="establecimiento" class="material-icons showfiltro">search</i>
+                </div>
+                <input class="filtro" placeholder="Buscar establecimiento" type="text" id='filtroestablecimiento'>
+                        
+                <div id="contEstab" >
+
+                </div>
+            </div>
+            
+        </div>
+        
+    </div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script type="text/javascript" src="slick/slick.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    
+    <script type="text/javascript">
+    var IP_LOCAL    ='192.168.0.8';        
+    var API_URL 	= 'http://'+IP_LOCAL+':8888/turno/ws/api.php';
+    var home_page	= 'home.html';
+        document.addEventListener("backbutton", onBackKeyDown, false);  
+            function onBackKeyDown(e) { 
+            e.preventDefault(); 
+            window.location.href = home_page;
+        }
+    
+    $('#main').click(function (event) {
+        var obj = $(event.target);
+        if (obj[0].id == "main"  && $('#togglecheck').prop('checked') == true ){
+          $('#togglecheck').trigger('click');
+        }
+        
+    });
+    $(document).ready(function(){
+        $('#subcategoria').hide();
+        $('#establecimiento').hide();
+        $('.filtro').hide();
+        $.getJSON(API_URL+"?task=getCategorias&id=0", function(data) {
+            $.each(data, function (key, entry) {
+                var html='<div filtro="'+entry.nombre.toLowerCase()+'">'+
+                            '<div aidi="'+entry.categoriaId+'" class="cont categocont '+entry.nombre.toLowerCase()+'">'+
+                                '<span >'+entry.nombre+'</span>'+
+                            '</div>'+
+                        '</div> ';
+                $('#contCatego').append(html);
+            });
+            $('#contCatego').slick({
+                dots: true,
+                slidesToShow: 1,
+                slidesToScroll: 2,
+                centerMode: true,
+                variableWidth: true,
+                responsive:true,
+                infinite: true,
+                focusOnSelect:true,
+            });
+        });
+        $('body').on('click','.subcategocont', function(event, slick, currentSlide, nextSlide){
+            var aidi=$(event.currentTarget).attr('aidi');
+            $('#establecimiento').show();
+            $.getJSON(API_URL+"?task=getEstablecimientos&id="+aidi, function(data) {
+                var html='';
+                $.each(data, function (key, entry) {
+                     html+='<div filtro="'+entry.nombre.toLowerCase()+'">'+
+                                '<div aidi="'+entry.establecimientoId+'" class="cont estabcont '+entry.nombre.toLowerCase()+'">'+
+                                    '<span >'+entry.nombre+'</span>'+
+                                '</div>'+
+                            '</div> ';
+                });
+                if($('#contEstab').hasClass('slick-initialized')){
+                    $('#contEstab').slick('unslick');
+                    $('#contEstab').empty();
+                    $('#contEstab').append(html);
+                    $('#contEstab').slick({
+                        dots: true,
+                        slidesToShow: 1,
+                        slidesToScroll: 2,
+                        centerMode: true,
+                        variableWidth: true,
+                        responsive:true,
+                        infinite: true,
+                    });
+                }else{
+                    $('#contEstab').empty();
+                    $('#contEstab').append(html);
+                    $('#contEstab').slick({
+                        dots: true,
+                        slidesToShow: 1,
+                        slidesToScroll: 2,
+                        centerMode: true,
+                        variableWidth: true,
+                        responsive:true,
+                        infinite: true,
+                    });
+                }
+            });
+            
+        });
+        $('body').on('click','.categocont', function(event, slick, currentSlide, nextSlide){
+            var aidi=$(event.currentTarget).attr('aidi');
+            $('#subcategoria').show();
+            $.getJSON(API_URL+"?task=getCategorias&id="+aidi, function(data) {
+                var html='';
+                $.each(data, function (key, entry) {
+                     html+='<div filtro="'+entry.nombre.toLowerCase()+'">'+
+                                '<div aidi="'+entry.categoriaId+'" class="cont subcategocont '+entry.nombre.toLowerCase()+'">'+
+                                    '<span >'+entry.nombre+'</span>'+
+                                '</div>'+
+                            '</div> ';
+                });
+                if($('#contSubCatego').hasClass('slick-initialized')){
+                    $('#contSubCatego').slick('unslick');
+                    $('#contSubCatego').empty();
+                    $('#contSubCatego').append(html);
+                    $('#contSubCatego').slick({
+                        dots: true,
+                        slidesToShow: 1,
+                        slidesToScroll: 2,
+                        centerMode: true,
+                        variableWidth: true,
+                        responsive:true,
+                        infinite: true,
+                    });
+                }else{
+                    $('#contSubCatego').empty();
+                    $('#contSubCatego').append(html);
+                    $('#contSubCatego').slick({
+                        dots: true,
+                        slidesToShow: 1,
+                        slidesToScroll: 2,
+                        centerMode: true,
+                        variableWidth: true,
+                        responsive:true,
+                        infinite: true,
+                    });
+                }
+            });
+        });
+           
+        $('body').on('click','.showfiltro', function(){
+            var target=$(this).attr('target');
+            $('#filtro'+target).show().focus();
+        });
+        $("#filtrocategoria").on("keyup", function() {
+            var value = $(this).val().toLowerCase();
+            if (value!="") {
+                $('.categoria').slick('slickUnfilter');
+                $('.categoria').slick('slickFilter','[filtro*='+value+']');
+            } else {
+                $('.categoria').slick('slickUnfilter');
+            }
+        });
+        $("#filtrosubcategoria").on("keyup", function() {
+            var value = $(this).val().toLowerCase();
+            if (value!="") {
+                $('.subcategoria').slick('slickUnfilter');
+                $('.subcategoria').slick('slickFilter','[filtro*='+value+']');
+            } else {
+                $('.subcategoria').slick('slickUnfilter');
+            }
+        });
+        $("#filtroestablecimiento").on("keyup", function() {
+            var value = $(this).val().toLowerCase();
+            if (value!="") {
+                $('#contEstab').slick('slickUnfilter');
+                $('#contEstab').slick('slickFilter','[filtro*='+value+']');
+            } else {
+                $('#contEstab').slick('slickUnfilter');
+            }
+        });
+    });
+    </script>
+    
+  </body>
+</html>

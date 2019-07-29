@@ -1,0 +1,41 @@
+.contenido{
+    background-color: white;
+    margin: 2vh 5vw 2vh;
+    height: 96vh;
+}
+.titulo{
+    margin-left: 10vw;
+}
+.categoria, .subcategoria, #contEstab{
+    margin: 0vh 2vh 3vh;
+    border-width: 2px;
+    border-color: black;
+}
+/* .categoria *{
+    border-width: 1px;
+    border-color: red;
+    border-style: solid;
+} */
+.categoria .cont, .subcategoria .cont, #contEstab .cont{
+    background: #005194;
+    color: #ffffff;
+    line-height: 10vh;
+    margin: 1vw;
+    position: relative;
+    text-align: center;
+    white-space: nowrap;
+    border-radius: 2vh 2vh 2vh 2vh;
+    -moz-border-radius: 2vh 2vh 2vh 2vh;
+    -webkit-border-radius: 2vh 2vh 2vh 2vh;
+}
+.cont span {
+    margin: 2vw;
+}
+.showfiltro{
+    float: right;
+    margin:1vw 4vw  ; 
+}
+.filtro {
+    margin: 1vh 2vh;
+    width: 87% !important;
+}

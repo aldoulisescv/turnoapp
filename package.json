@@ -16,7 +16,6 @@
     "cordova-android": "^8.0.0",
     "cordova-browser": "^6.0.0",
     "cordova-plugin-simplelogin": "git+https://github.com/shuhailshuvo/cordova-plugin-SimpleLogin.git",
-    "cordova-plugin-splashscreen": "^5.0.3",
     "web": "0.0.2"
   },
   "devDependencies": {
@@ -25,7 +24,6 @@
   "cordova": {
     "plugins": {
       "cordova-plugin-whitelist": {},
-      "cordova-plugin-splashscreen": {},
       "cordova-plugin-simplelogin": {}
     },
     "platforms": [
