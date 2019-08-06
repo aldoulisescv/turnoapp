@@ -12,7 +12,9 @@
     <link href="css/home.css" rel="stylesheet" type="text/css" />
     <style type='text/css'>:root {--bodyBGcolor: #ffffff;--bodyTXcolor: #000000;--bordercolor:#019498;}</style>
     <link href="css/turno.css" rel="stylesheet" type="text/css" />
-	<script src="js/simplelogin.js"></script>   
+    <script src="js/simplelogin.js"></script>   
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+     
     <!-- Add the slick-theme.css if you want default styling -->
     <link rel="stylesheet" type="text/css" href="slick/slick.css"/>
     <!-- Add the slick-theme.css if you want default styling -->
@@ -34,7 +36,7 @@
               </ul>
             </div>
         </div>
-        <div class="contenido">
+        <div class="content">
             <h2 class="titulo">Nuevo Turno</h2>
             <div id="categoria">
                 <div style="height: 4vh;">
@@ -66,34 +68,180 @@
 
                 </div>
             </div>
-            
+            <div class="modal fade" id="nuevoTurno" role="dialog">
+                    <div class="modal-dialog" >
+                        <div class="modal-content" >
+                            <div class="modal-header">
+                                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                                <h4 class="modal-title">Elige un día y una hora</h4>
+                            </div>
+                            <div  class="modal-body" >
+                                <div id="bodymodal" class="form-group-attached">
+                                    <div class="row">
+                                        <div class="col-sm-12">
+                                                <button class="arrowprev slick-prev slick-arrow" aria-label="Previous" type="button" style="display: block;">Previous</button>
+                                                <input type='text' class="form-control inputcalendar" id='datetimepicker' placeholder="Selecciona una fecha"/>
+                                                <button class="arrownext slick-next slick-arrow" aria-label="Next" type="button" style="display: block;">Next</button>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-sm-12">
+                                                <select class="form-control" id="seltiposesion">
+                                                        <option value="" disabled selected>No hay opciones diponibles para esta fecha</option>    
+                                                </select>
+                                        </div>
+                                    </div>
+                                    <div id="lashoras" class="col-sm-12">
+                                        El relleno.
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-default" data-dismiss="modal">Cerrar</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
         </div>
         
+        
     </div>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap-theme.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datetimepicker/4.17.37/css/bootstrap-datetimepicker.min.css" />
+ 
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
+    <script src="js/moment.min.js"></script>
+    <script src="js/bootstrap-datetimepicker.min.js"></script>
+    <script src="js/bootstrap-datetimepicker.es.js"></script>
     <script type="text/javascript" src="slick/slick.min.js"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
     
     <script type="text/javascript">
-    var IP_LOCAL    ='192.168.0.8';        
+    var IP_LOCAL    = '192.168.0.8';        
     var API_URL 	= 'http://'+IP_LOCAL+':8888/turno/ws/api.php';
     var home_page	= 'home.html';
-        document.addEventListener("backbutton", onBackKeyDown, false);  
-            function onBackKeyDown(e) { 
-            e.preventDefault(); 
-            window.location.href = home_page;
-        }
-    
+    var estabId ;
+    document.addEventListener("backbutton", onBackKeyDown, false);  
+        function onBackKeyDown(e) { 
+        e.preventDefault(); 
+        window.location.href = home_page;
+    }
     $('#main').click(function (event) {
         var obj = $(event.target);
         if (obj[0].id == "main"  && $('#togglecheck').prop('checked') == true ){
           $('#togglecheck').trigger('click');
         }
-        
     });
     $(document).ready(function(){
         $('#subcategoria').hide();
         $('#establecimiento').hide();
+        $('#datetimepicker').datetimepicker({
+            format:'YYYY-MM-DD',
+            autoclose: true,
+            keepOpen: false,
+        });
+        $("#datetimepicker").on("change", function() {
+            console.log();
+            var dia=$(this).val();
+            var d = new Date(dia);
+            var weekday = new Array(7);
+            weekday[0] = "L";
+            weekday[1] = "M";
+            weekday[2] = "X";
+            weekday[3] = "J";
+            weekday[4] = "V";
+            weekday[5] = "S";
+            weekday[6] =  "D";
+            var dayofweek = weekday[d.getDay()];
+
+            $.getJSON(API_URL+"?task=getSesionesDia&dia="+dia+"&estab="+estabId+"&dayofweek="+dayofweek, function(data) {
+                console.log(data);
+                data= removeDuplicates(data, 'tipoSesionId');
+                console.log(data.length);
+                $('#seltiposesion').empty();
+                if(data.length>0){
+                    $('#seltiposesion').append('<option value="" disabled selected>Selecciona una sesión</option>');
+                    $.each(data, function (key, entry) {
+                        var html='<option value="'+entry.tipoSesionId+'">'+entry.nombre+'</option>';
+                        $('#seltiposesion').append(html);
+                    });
+                }else{
+                    $('#seltiposesion').append('<option value="" disabled selected>No hay opciones diponibles para esta fecha</option>');
+                }
+                $('#datetimepicker').data("DateTimePicker").hide();
+                $('#seltiposesion').focus();
+                
+            });
+        });
+        $('body').on('change','#seltiposesion', function() {
+            console.log($(this).val());
+            var dia=$('#datetimepicker').val();
+            var d = new Date(dia);
+            var weekday = new Array(7);
+            weekday[0] = "L";
+            weekday[1] = "M";
+            weekday[2] = "X";
+            weekday[3] = "J";
+            weekday[4] = "V";
+            weekday[5] = "S";
+            weekday[6] =  "D";
+            var dayofweek = weekday[d.getDay()];
+            var f=$("#datetimepicker").val();
+            f=f.substring(5,7)+'-'+f.substring(8,10)+'-'+f.substring(0,4);
+            $.getJSON(API_URL+"?task=getRecursosDisponibles&tiposesion="+$(this).val()+"&estab="+estabId+"&dayofweek="+dayofweek, function(data) {
+                var i = new Date(f);
+                var manana=new Date(f);
+                var ahora=new Date();
+                manana.setDate(manana.getDate()+1);
+                console.log(f);
+                console.log(i, manana, ahora);
+                $("#lashoras").empty();
+                while ( i.getDate() < manana.getDate() ) {
+                    var nopermitido = (i<=ahora)?' bloqueado ':'';
+                    var hora=i.getHours();
+                    var hora=(hora<10)?'0'+hora:hora;
+                    var mins=i.getMinutes();
+                    var mins=(mins<10)?'0'+mins:mins;
+                    var html='';
+                    html+='<div class="row momentodisabled '+nopermitido+'" id="momento'+hora+'_'+mins+'">';
+                    html+='<div class="horamin ">'+hora+':'+mins+'</div>';
+                    html+='<div class="col-xs-9 contenido " id="contenido'+hora+'_'+mins+'"></div>';
+                    html+='</div>';
+                    $("#lashoras").append(html);
+                    i.setMinutes(i.getMinutes()+ parseInt(data[0].stepping));
+                }
+                $.each(data, function (key, value) {
+                    console.log(value);
+                    var horaInicio = value.horaInicio.substring(0,2);
+                    var horaFin = value.horaFin.substring(0,2);
+                    var minInicio = value.horaInicio.substring(3,5);
+                    var minFin = value.horaFin.substring(3,5);
+                    var timeInicio= new Date(f);
+                    timeInicio.setHours(horaInicio);
+                    timeInicio.setMinutes(minInicio);
+                    var timeFin= new Date(f);
+                    timeFin.setHours(horaFin);
+                    timeFin.setMinutes(minFin);
+                    while ( timeInicio< timeFin ) {
+                        var hora=timeInicio.getHours();
+                        var hora=(hora<10)?'0'+hora:hora;
+                        var mins=timeInicio.getMinutes();
+                        var mins=(mins<10)?'0'+mins:mins;
+                        if( !$('#momento'+hora+'_'+mins).hasClass('bloqueado')){
+                            $('#momento'+hora+'_'+mins).addClass('momentoenabled');
+                        }
+                        $('#momento'+hora+'_'+mins).removeClass('momentodisabled');
+                        $('#contenido'+hora+'_'+mins).empty();
+                        var recs = $('#contenido'+hora+'_'+mins).attr('diponibles');
+                        $('#contenido'+hora+'_'+mins).attr('diponibles', parseInt(recs) +1 );
+                        timeInicio.setMinutes(timeInicio.getMinutes()+ parseInt(data[0].stepping));
+                    }
+                    var elid = $('.momentoenabled:first').attr('id');
+                    var elmnt = document.getElementById(elid);
+                    elmnt.scrollIntoView();
+                });
+            });
+        });  
         $('.filtro').hide();
         $.getJSON(API_URL+"?task=getCategorias&id=0", function(data) {
             $.each(data, function (key, entry) {
@@ -159,6 +307,8 @@
         $('body').on('click','.categocont', function(event, slick, currentSlide, nextSlide){
             var aidi=$(event.currentTarget).attr('aidi');
             $('#subcategoria').show();
+
+            $('#establecimiento').hide();
             $.getJSON(API_URL+"?task=getCategorias&id="+aidi, function(data) {
                 var html='';
                 $.each(data, function (key, entry) {
@@ -196,7 +346,26 @@
                 }
             });
         });
-           
+        $('body').on('click','.estabcont', function(event, slick, currentSlide, nextSlide){
+            var aidi=$(event.currentTarget).attr('aidi');
+            $("#nuevoTurno").modal({backdrop: true});
+            $.getJSON(API_URL+"?task=getEstablecimiento&id="+aidi, function(data) {
+                console.log(data);
+                estabId=data.establecimientoId;
+                // SELECT e.establecimientoId, e.nombre, e.stepping, 
+                // r.recursoId, r.nombre as rnombre,  r.orden_alfa,
+                // h.horaInicio, h.horaFin, h.diasLaborables
+                // FROM establecimientos as e 
+                // INNER JOIN recursos as r on r.establecimientoId=e.establecimientoId
+                // INNER JOIN horariosRecursos as h on h.recursoId=r.recursoId
+                // WHERE 1 
+                // and e.establecimientoId = 23
+                // ORDER BY r.nombre
+
+            });
+        }); 
+        
+        
         $('body').on('click','.showfiltro', function(){
             var target=$(this).attr('target');
             $('#filtro'+target).show().focus();
@@ -229,6 +398,11 @@
             }
         });
     });
+    function removeDuplicates(myArr, prop) {
+        return myArr.filter((obj, pos, arr) => {
+            return arr.map(mapObj => mapObj[prop]).indexOf(obj[prop]) === pos;
+        });
+    }
     </script>
     
   </body>

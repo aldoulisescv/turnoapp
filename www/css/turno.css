@@ -1,4 +1,4 @@
-.contenido{
+.content{
     background-color: white;
     margin: 2vh 5vw 2vh;
     height: 96vh;
@@ -38,4 +38,77 @@
 .filtro {
     margin: 1vh 2vh;
     width: 87% !important;
+}
+.modal-dialog{
+    margin: 8vh 3vw !important;
+}
+.modal-comtent{
+    height: 84vh;
+}
+.modal-body{
+    overflow-y: scroll;
+    height: 67vh;
+}
+.arrownext{
+    right: 6vw !important;
+}
+.arrowprev{
+    left: 6vw !important;
+}
+.inputcalendar, #seltiposesion{
+    text-align-last: center;
+    width: 100% !important;
+    /* margin: 0% 13%; */
+    border: 1px solid var(--bordercolor) !important;
+}
+/* Full-screen display */
+.datepicker.datepicker-dropdown {
+    top: 0 !important;
+    left: 0 !important;
+    height: 100%;
+    width: 100%;
+    margin-top: 0;
+    -webkit-border-radius: 0;
+    -moz-border-radius: 0;
+    border-radius: 0;
+}
+
+/* Hide the arrow */
+.datepicker.datepicker-dropdown:before {
+    display: none;
+}
+.modal-dialog {
+    width: auto !important; 
+}
+.row{
+    margin:2vh 0vh !important;
+}
+#lashoras{
+    /* background-color: rgb(148, 148, 148);   */
+    height: 45vh;
+    overflow-y: scroll;
+}
+.contenido{
+    height: inherit;
+    border-radius: 1.5vh;
+}
+.momentodisabled {
+    color: #2c2c2c;
+    cursor: not-allowed;
+    height: 5vh;
+    margin: 1vh 0vh !important;
+}
+.horamin{
+    width: 25%;
+    float: left;
+    position: relative;
+    min-height: 1px;
+    padding-left: 2vw;
+    top: 50%;
+    -ms-transform: translateY(-50%);
+    -webkit-transform: translateY(-50%);
+    transform: translateY(-50%);
+}
+.momentodisabled>.contenido{
+    background-color: #868484;
 }
