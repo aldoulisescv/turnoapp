@@ -1,7 +1,6 @@
 .content{
     background-color: white;
     margin: 2vh 5vw 2vh;
-    height: 96vh;
 }
 .titulo{
     margin-left: 10vw;
@@ -91,8 +90,13 @@
 .contenido{
     height: inherit;
     border-radius: 1.5vh;
+    text-align: center;
 }
-.momentodisabled {
+.contenido>span {
+    vertical-align: -webkit-baseline-middle;
+    height: inherit;
+}
+.momento {
     color: #2c2c2c;
     cursor: not-allowed;
     height: 5vh;
@@ -111,4 +115,13 @@
 }
 .momentodisabled>.contenido{
     background-color: #868484;
+}
+.bloqueado>.contenido {
+    background: #f76b68;
+}
+.momentoenabled>.contenido {
+    background: #f0f0f0;
+}
+.swal2-modal{
+    font-size: inherit !important;
 }

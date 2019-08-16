@@ -3,7 +3,7 @@
 	<head>
     <meta charset="utf-8">
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-    <meta name="viewport" content="width=device-width">
+    <meta name="viewport" content="width=device-width , initial-scale=1.0">
     <script type="text/javascript" src="cordova.js"></script>
        
     <!--Import Google Icon Font-->
@@ -14,10 +14,7 @@
     <link href="css/turno.css" rel="stylesheet" type="text/css" />
     <script src="js/simplelogin.js"></script>   
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
-     
-    <!-- Add the slick-theme.css if you want default styling -->
     <link rel="stylesheet" type="text/css" href="slick/slick.css"/>
-    <!-- Add the slick-theme.css if you want default styling -->
     <link rel="stylesheet" type="text/css" href="slick/slick-theme.css"/>
   </head>
   <body>
@@ -79,9 +76,9 @@
                                 <div id="bodymodal" class="form-group-attached">
                                     <div class="row">
                                         <div class="col-sm-12">
-                                                <button class="arrowprev slick-prev slick-arrow" aria-label="Previous" type="button" style="display: block;">Previous</button>
+                                                <button id="arrowprev"  class="arrowprev arrow slick-prev slick-arrow" aria-label="Previous" type="button" style="display: block;">Previous</button>
                                                 <input type='text' class="form-control inputcalendar" id='datetimepicker' placeholder="Selecciona una fecha"/>
-                                                <button class="arrownext slick-next slick-arrow" aria-label="Next" type="button" style="display: block;">Next</button>
+                                                <button id="arrownext" class="arrownext arrow slick-next slick-arrow" aria-label="Next" type="button" style="display: block;">Next</button>
                                         </div>
                                     </div>
                                     <div class="row">
@@ -92,7 +89,6 @@
                                         </div>
                                     </div>
                                     <div id="lashoras" class="col-sm-12">
-                                        El relleno.
                                     </div>
                                 </div>
                             </div>
@@ -115,9 +111,9 @@
     <script src="js/bootstrap-datetimepicker.min.js"></script>
     <script src="js/bootstrap-datetimepicker.es.js"></script>
     <script type="text/javascript" src="slick/slick.min.js"></script>
-    
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@8"></script>
     <script type="text/javascript">
-    var IP_LOCAL    = '192.168.0.8';        
+    var IP_LOCAL    = 'localhost';        
     var API_URL 	= 'http://'+IP_LOCAL+':8888/turno/ws/api.php';
     var home_page	= 'home.html';
     var estabId ;
@@ -133,31 +129,49 @@
         }
     });
     $(document).ready(function(){
+        $('.arrow').hide();
         $('#subcategoria').hide();
         $('#establecimiento').hide();
+        $('#lashoras').hide();
+        
         $('#datetimepicker').datetimepicker({
-            format:'YYYY-MM-DD',
+            format:'MM-DD-YYYY',
             autoclose: true,
             keepOpen: false,
         });
+        $(".arrow").on("click", function() {
+            var target=$(this).attr('target');
+            target=new Date(target);
+            target=new Date(target.getFullYear(), target.getMonth(), target.getDate());
+            var date= (target.getDate()<10)?'0'+target.getDate():target.getDate();
+            var month= (target.getMonth()<10)?'0'+target.getMonth():target.getMonth()
+            month = parseInt(month)+1;
+            var fe= month+'-'+date +'-'+target.getFullYear();
+            $('#datetimepicker').val(fe).trigger('change');
+        });
         $("#datetimepicker").on("change", function() {
-            console.log();
+            $('#lashoras').hide();
             var dia=$(this).val();
             var d = new Date(dia);
             var weekday = new Array(7);
-            weekday[0] = "L";
-            weekday[1] = "M";
-            weekday[2] = "X";
-            weekday[3] = "J";
-            weekday[4] = "V";
-            weekday[5] = "S";
-            weekday[6] =  "D";
+            weekday[1] = "L";
+            weekday[2] = "M";
+            weekday[3] = "X";
+            weekday[4] = "J";
+            weekday[5] = "V";
+            weekday[6] = "S";
+            weekday[0] =  "D";
             var dayofweek = weekday[d.getDay()];
-
+            var targetnext=new Date(d.getFullYear(), d.getMonth(), d.getDate());
+            targetnext.setDate(targetnext.getDate()+1);
+            $('#arrownext').attr('target', targetnext);
+            var targetprev=new Date(d.getFullYear(), d.getMonth(), d.getDate());
+            targetprev.setDate(targetprev.getDate()-1);
+            $('#arrowprev').attr('target', targetprev);
+            $('.arrow').show();
+            dia=dia.substring(6,10)+'-'+dia.substring(3,5)+'-'+dia.substring(0,2);
             $.getJSON(API_URL+"?task=getSesionesDia&dia="+dia+"&estab="+estabId+"&dayofweek="+dayofweek, function(data) {
-                console.log(data);
                 data= removeDuplicates(data, 'tipoSesionId');
-                console.log(data.length);
                 $('#seltiposesion').empty();
                 if(data.length>0){
                     $('#seltiposesion').append('<option value="" disabled selected>Selecciona una sesión</option>');
@@ -173,29 +187,82 @@
                 
             });
         });
+        $('body').on('click','.momentoenabled', function(event) {
+            var momid = $(this).attr('id');
+            var recursos=$('#'+momid+' > .contenido').attr('aidis');
+            
+            recursos=recursos.split(' ');
+            var recurso=recursos[0];
+            var lasesion=$('#seltiposesion').val();
+            var horainicio=$('#'+momid+' > .horamin').text();
+            console.log(momid, recursos, horainicio);
+            var fecha=$('#datetimepicker').val();
+            fecha=fecha.substring(6,10)+'-'+fecha.substring(0,2)+'-'+fecha.substring(3,5);
+            $.getJSON(API_URL+"?task=getDataforTurno&horainicio="+horainicio+"&sesion="+lasesion, function(data) {
+                Swal.fire({
+                    type: 'question',
+                    title: '¿Desea confirmar el Turno?',
+                    html:   '<div style="margin:0 10%">' +
+                        '<b class="pull-left">Establecimiento:</b> <span class="pull-right">'+data.enombre+'</span><br>' +
+                        '<b class="pull-left">Sesión:</b> <span class="pull-right">'+data.nombre+'</span><br>' +
+                        '<b class="pull-left">Fecha:</b> <span class="pull-right">'+fecha+'</span><br>' +
+                        '<b class="pull-left">Hora de Inicio:</b> <span class="pull-right">'+horainicio+'</span><br>' +
+                        '<b class="pull-left">Hora de Finalización:</b> <span class="pull-right">'+data.horafin+'</span><br>' , 
+                    width: '100vw',
+                    showCloseButton: true,
+                    showCancelButton: true,
+                }).then((result) => {
+                    if (result.value) {
+                        $.getJSON(API_URL+"?task=setTurno"+
+                            "&establecimientoId="+estabId+
+                            "&usuarioId="+localStorage.uid+
+                            "&recursoId="+recurso+
+                            "&tipoSesionId="+lasesion+
+                            "&fecha="+fecha+
+                            "&horainicio="+horainicio+
+                            "&horafin="+data.horafin,
+                        function(data) {
+                            if(data.ws_error=='0'){
+                                Swal.fire(
+                                    'Listo!',
+                                    'El turno número '+data.turnoId+' ha sido agendado',
+                                    'success'
+                                ).then((result) => {
+                                    if (result.value) 
+                                    window.location.href = 'home.html';
+                                });
+                                    
+                            }
+                        });
+                        
+                    }
+                });
+            });
+            
+        });
         $('body').on('change','#seltiposesion', function() {
-            console.log($(this).val());
             var dia=$('#datetimepicker').val();
             var d = new Date(dia);
             var weekday = new Array(7);
-            weekday[0] = "L";
-            weekday[1] = "M";
-            weekday[2] = "X";
-            weekday[3] = "J";
-            weekday[4] = "V";
-            weekday[5] = "S";
-            weekday[6] =  "D";
+            weekday[1] = "L";
+            weekday[2] = "M";
+            weekday[3] = "X";
+            weekday[4] = "J";
+            weekday[5] = "V";
+            weekday[6] = "S";
+            weekday[0] =  "D";
             var dayofweek = weekday[d.getDay()];
             var f=$("#datetimepicker").val();
-            f=f.substring(5,7)+'-'+f.substring(8,10)+'-'+f.substring(0,4);
+            $('#lashoras').show();
+            dia=dia.substring(6,10)+'-'+dia.substring(0,2)+'-'+dia.substring(3,5);
             $.getJSON(API_URL+"?task=getRecursosDisponibles&tiposesion="+$(this).val()+"&estab="+estabId+"&dayofweek="+dayofweek, function(data) {
                 var i = new Date(f);
                 var manana=new Date(f);
                 var ahora=new Date();
                 manana.setDate(manana.getDate()+1);
-                console.log(f);
-                console.log(i, manana, ahora);
                 $("#lashoras").empty();
+                // console.log(data);
+                //Carga todas las horas
                 while ( i.getDate() < manana.getDate() ) {
                     var nopermitido = (i<=ahora)?' bloqueado ':'';
                     var hora=i.getHours();
@@ -203,42 +270,18 @@
                     var mins=i.getMinutes();
                     var mins=(mins<10)?'0'+mins:mins;
                     var html='';
-                    html+='<div class="row momentodisabled '+nopermitido+'" id="momento'+hora+'_'+mins+'">';
+                    html+='<div class="row momento momentodisabled '+nopermitido+'" id="momento'+hora+'_'+mins+'">';
                     html+='<div class="horamin ">'+hora+':'+mins+'</div>';
-                    html+='<div class="col-xs-9 contenido " id="contenido'+hora+'_'+mins+'"></div>';
+                    html+='<div class="col-xs-9 contenido" disponibles="0" id="contenido'+hora+'_'+mins+'"><span><b>0</b> disponible(s) </span></div>';
                     html+='</div>';
                     $("#lashoras").append(html);
                     i.setMinutes(i.getMinutes()+ parseInt(data[0].stepping));
                 }
-                $.each(data, function (key, value) {
-                    console.log(value);
-                    var horaInicio = value.horaInicio.substring(0,2);
-                    var horaFin = value.horaFin.substring(0,2);
-                    var minInicio = value.horaInicio.substring(3,5);
-                    var minFin = value.horaFin.substring(3,5);
-                    var timeInicio= new Date(f);
-                    timeInicio.setHours(horaInicio);
-                    timeInicio.setMinutes(minInicio);
-                    var timeFin= new Date(f);
-                    timeFin.setHours(horaFin);
-                    timeFin.setMinutes(minFin);
-                    while ( timeInicio< timeFin ) {
-                        var hora=timeInicio.getHours();
-                        var hora=(hora<10)?'0'+hora:hora;
-                        var mins=timeInicio.getMinutes();
-                        var mins=(mins<10)?'0'+mins:mins;
-                        if( !$('#momento'+hora+'_'+mins).hasClass('bloqueado')){
-                            $('#momento'+hora+'_'+mins).addClass('momentoenabled');
-                        }
-                        $('#momento'+hora+'_'+mins).removeClass('momentodisabled');
-                        $('#contenido'+hora+'_'+mins).empty();
-                        var recs = $('#contenido'+hora+'_'+mins).attr('diponibles');
-                        $('#contenido'+hora+'_'+mins).attr('diponibles', parseInt(recs) +1 );
-                        timeInicio.setMinutes(timeInicio.getMinutes()+ parseInt(data[0].stepping));
-                    }
-                    var elid = $('.momentoenabled:first').attr('id');
-                    var elmnt = document.getElementById(elid);
-                    elmnt.scrollIntoView();
+                var data2 = uniqueBy(data, "recursoId").join(',');
+                cargaRecursos(data,f, ()=>{
+                    quitaOcupados(API_URL,dia,estabId,data2,f,data,()=>{
+                        quitaIncompletos(data);
+                    });
                 });
             });
         });  
@@ -352,16 +395,6 @@
             $.getJSON(API_URL+"?task=getEstablecimiento&id="+aidi, function(data) {
                 console.log(data);
                 estabId=data.establecimientoId;
-                // SELECT e.establecimientoId, e.nombre, e.stepping, 
-                // r.recursoId, r.nombre as rnombre,  r.orden_alfa,
-                // h.horaInicio, h.horaFin, h.diasLaborables
-                // FROM establecimientos as e 
-                // INNER JOIN recursos as r on r.establecimientoId=e.establecimientoId
-                // INNER JOIN horariosRecursos as h on h.recursoId=r.recursoId
-                // WHERE 1 
-                // and e.establecimientoId = 23
-                // ORDER BY r.nombre
-
             });
         }); 
         
@@ -398,10 +431,134 @@
             }
         });
     });
+    function cargaRecursos( data,f,callback) {
+        $.each(data, function (key, value) {
+            var horaInicio = value.horaInicio.substring(0,2);
+            var horaFin = value.horaFin.substring(0,2);
+            var minInicio = value.horaInicio.substring(3,5);
+            var minFin = value.horaFin.substring(3,5);
+            var timeInicio= new Date(f);
+            timeInicio.setHours(horaInicio);
+            timeInicio.setMinutes(minInicio);
+            var timeFin= new Date(f);
+            timeFin.setHours(horaFin);
+            timeFin.setMinutes(minFin);
+            while ( timeInicio< timeFin ) {
+                var hora=timeInicio.getHours();
+                var hora=(hora<10)?'0'+hora:hora;
+                var mins=timeInicio.getMinutes();
+                var mins=(mins<10)?'0'+mins:mins;
+                if( !$('#momento'+hora+'_'+mins).hasClass('bloqueado')){
+                    $('#momento'+hora+'_'+mins).addClass('momentoenabled');
+                }
+                $('#momento'+hora+'_'+mins).removeClass('momentodisabled');
+                $('#contenido'+hora+'_'+mins).empty();
+                var recs = ($('#contenido'+hora+'_'+mins).attr('disponibles'))?$('#contenido'+hora+'_'+mins).attr('disponibles'):0;
+                $('#contenido'+hora+'_'+mins).attr('disponibles', parseInt(recs) +1 );
+                var aidis= ($('#contenido'+hora+'_'+mins).attr('aidis'))?$('#contenido'+hora+'_'+mins).attr('aidis'):'';
+                var array = aidis.split(" ");
+                array.push(value.recursoId);
+                aidis=array.join(' ');
+                aidis=aidis.trim();
+                $('#contenido'+hora+'_'+mins).attr('aidis', aidis);
+                $('#contenido'+hora+'_'+mins).html("<span><b>"+ $('#contenido'+hora+'_'+mins).attr('disponibles')+"</b> disponible(s)</span>" );
+                timeInicio.setMinutes(timeInicio.getMinutes()+ parseInt(data[0].stepping));
+            }
+            var elid = $('.momentoenabled:first').attr('id');
+            var elmnt = document.getElementById(elid);
+            elmnt.scrollIntoView();
+        });
+
+        typeof callback === 'function' && callback(); 
+        
+    }
+    function quitaOcupados(API_URL,dia,estabId,data2,f,data,callback) {
+        //quita los turnos ocupados
+        $.getJSON(API_URL+"?task=getTurnosHoy&fecha="+dia+"&estab="+estabId+"&recursos="+data2, function(datos) {
+            $.each(datos, function (key, value) {
+                var horaInicio = value.horaInicio.substring(0,2);
+                var horaFin = value.horaFin.substring(0,2);
+                var minInicio = value.horaInicio.substring(3,5);
+                var minFin = value.horaFin.substring(3,5);
+                var timeInicio= new Date(f);
+                timeInicio.setHours(horaInicio);
+                timeInicio.setMinutes(minInicio);
+                var timeFin= new Date(f);
+                timeFin.setHours(horaFin);
+                timeFin.setMinutes(minFin);
+                while ( timeInicio< timeFin ) {
+                    var hora=timeInicio.getHours();
+                    var hora=(hora<10)?'0'+hora:hora;
+                    var mins=timeInicio.getMinutes();
+                    var mins=(mins<10)?'0'+mins:mins;
+                    var cont =$( '#contenido'+hora+'_'+mins );
+                    var aidis=cont.attr('aidis');
+                    if(aidis){
+                        aidis=aidis.split(" ");
+                        aidis=arrayRemove(aidis, value.recursoId);
+                        var disponibles=aidis.length;
+                        aidis=aidis.join(' ');
+                        aidis=aidis.trim();
+                        $('#contenido'+hora+'_'+mins).attr('aidis', aidis);
+                        $('#contenido'+hora+'_'+mins).attr('disponibles',disponibles );
+                        $('#contenido'+hora+'_'+mins).html("<span><b>"+ disponibles+"</b> disponible(s)</span>" );
+                        if(disponibles==0){
+                            $('#momento'+hora+'_'+mins).removeClass('momentoenabled');
+                            $('#momento'+hora+'_'+mins).addClass('momentodisabled');
+                        }
+                    }
+                    timeInicio.setMinutes(timeInicio.getMinutes()+ parseInt(data[0].stepping));
+                }
+            });
+            typeof callback === 'function' && callback(); 
+        });
+    }
+    function quitaIncompletos(data) {
+        //bloquea lugares que no alcanzan para un turno
+        
+        $.each($('.momentoenabled'), function (key, value) { 
+            var aidirevisando = $(value).attr('id');
+            var losaidis= $('#'+aidirevisando+'>.contenido').attr('aidis');  
+            arrlosaidis=losaidis.split(' ');    
+            este=aidirevisando;
+            var pasosSesison=data[0].minutosTotales/data[0].stepping;
+            for (let x = 0; x < arrlosaidis.length; x++) {
+                var elarray =new Array();
+                for (let i = 1; i <= pasosSesison; i++) {
+                    if($('#'+este).hasClass('momentoenabled')){
+                        elarray.push(este);
+                        este= $('#'+este).next().attr('id');
+                    }else{
+                        break;
+                    }
+                }
+                if(elarray.length!=pasosSesison){
+                    elarray.forEach(element => {
+                        $('#'+element).removeClass('momentoenabled');
+                        $('#'+element).addClass('momentodisabled');
+                        $('#'+element).addClass('bloqueado');
+                    });
+                }
+            }
+        });
+            
+    }
     function removeDuplicates(myArr, prop) {
         return myArr.filter((obj, pos, arr) => {
             return arr.map(mapObj => mapObj[prop]).indexOf(obj[prop]) === pos;
         });
+    }
+    function uniqueBy(arr, prop){
+        return arr.reduce((a, d) => {
+            if (!a.includes(d[prop])) { a.push(d[prop]); }
+            return a;
+        }, []);
+    }
+    function arrayRemove(arr, value) {
+        return arr.filter(function(ele){
+            return ele != value;
+        });
+
     }
     </script>
     
