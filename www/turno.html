@@ -66,38 +66,38 @@
                 </div>
             </div>
             <div class="modal fade" id="nuevoTurno" role="dialog">
-                    <div class="modal-dialog" >
-                        <div class="modal-content" >
-                            <div class="modal-header">
-                                <button type="button" class="close" data-dismiss="modal">&times;</button>
-                                <h4 class="modal-title">Elige un día y una hora</h4>
-                            </div>
-                            <div  class="modal-body" >
-                                <div id="bodymodal" class="form-group-attached">
-                                    <div class="row">
-                                        <div class="col-sm-12">
-                                                <button id="arrowprev"  class="arrowprev arrow slick-prev slick-arrow" aria-label="Previous" type="button" style="display: block;">Previous</button>
-                                                <input type='text' class="form-control inputcalendar" id='datetimepicker' placeholder="Selecciona una fecha"/>
-                                                <button id="arrownext" class="arrownext arrow slick-next slick-arrow" aria-label="Next" type="button" style="display: block;">Next</button>
-                                        </div>
-                                    </div>
-                                    <div class="row">
-                                        <div class="col-sm-12">
-                                                <select class="form-control" id="seltiposesion">
-                                                        <option value="" disabled selected>No hay opciones diponibles para esta fecha</option>    
-                                                </select>
-                                        </div>
-                                    </div>
-                                    <div id="lashoras" class="col-sm-12">
+                <div class="modal-dialog" >
+                    <div class="modal-content" >
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal">&times;</button>
+                            <h4 class="modal-title">Elige un día y una hora</h4>
+                        </div>
+                        <div  class="modal-body" >
+                            <div id="bodymodal" class="form-group-attached">
+                                <div class="row">
+                                    <div class="col-sm-12">
+                                        <button id="arrowprev"  class="arrowprev arrow slick-prev slick-arrow" aria-label="Previous" type="button" style="display: block;">Previous</button>
+                                        <input type='text' class="form-control inputcalendar" id='datetimepicker' placeholder="Selecciona una fecha"/>
+                                        <button id="arrownext" class="arrownext arrow slick-next slick-arrow" aria-label="Next" type="button" style="display: block;">Next</button>
                                     </div>
                                 </div>
+                                <div class="row">
+                                    <div class="col-sm-12">
+                                            <select class="form-control" id="seltiposesion">
+                                                    <option value="" disabled selected>No hay opciones diponibles para esta fecha</option>    
+                                            </select>
+                                    </div>
+                                </div>
+                                <div id="lashoras" class="col-sm-12">
+                                </div>
                             </div>
-                            <div class="modal-footer">
-                                <button type="button" class="btn btn-default" data-dismiss="modal">Cerrar</button>
-                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-default" data-dismiss="modal">Cerrar</button>
                         </div>
                     </div>
                 </div>
+            </div>
         </div>
         
         
@@ -138,6 +138,7 @@
             format:'MM-DD-YYYY',
             autoclose: true,
             keepOpen: false,
+            useCurrent: false
         });
         $(".arrow").on("click", function() {
             var target=$(this).attr('target');
@@ -195,7 +196,6 @@
             var recurso=recursos[0];
             var lasesion=$('#seltiposesion').val();
             var horainicio=$('#'+momid+' > .horamin').text();
-            console.log(momid, recursos, horainicio);
             var fecha=$('#datetimepicker').val();
             fecha=fecha.substring(6,10)+'-'+fecha.substring(0,2)+'-'+fecha.substring(3,5);
             $.getJSON(API_URL+"?task=getDataforTurno&horainicio="+horainicio+"&sesion="+lasesion, function(data) {
@@ -394,7 +394,13 @@
             $("#nuevoTurno").modal({backdrop: true});
             $.getJSON(API_URL+"?task=getEstablecimiento&id="+aidi, function(data) {
                 console.log(data);
+                $('.arrow').hide();
+                $('#datetimepicker').val('');
+                $('#subcategoria').hide();
+                $('#establecimiento').hide();
+                $('#lashoras').hide();
                 estabId=data.establecimientoId;
+                //limpiar
             });
         }); 
         

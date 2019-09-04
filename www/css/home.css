@@ -14,7 +14,7 @@
     z-index: 1;
     top: 5px;
     right: 125%;    
-    overflow: initial;
+    overflow: initial !important;
     height: fit-content;
     line-height: normal;
 }
@@ -231,7 +231,7 @@ a:hover
     .buttonenv:active {
       background-color: #3e8e41;
       box-shadow: 0 5px #666;
-      transform: translateY(4px);*/
+      transform: translateY(4px);
     }
     /*textarea {
       width: 100%;
@@ -381,4 +381,70 @@ a:hover
     -webkit-transition: border-color ease-in-out .15s,-webkit-box-shadow ease-in-out .15s;
     -o-transition: border-color ease-in-out .15s,box-shadow ease-in-out .15s;
     transition: border-color ease-in-out .15s,box-shadow ease-in-out .15s;
+}
+.turnos{
+  height: 84vh;
+  width: 100vw;
+  overflow-y: scroll;
+}
+.turno {
+  margin: 2vh;
+  padding: 10px;
+  border-radius: 10px 10px 10px 10px;
+  background-color: whitesmoke;
+-moz-border-radius: 10px 10px 10px 10px;
+-webkit-border-radius: 10px 10px 10px 10px;
+border: 2px solid #000000;
+-webkit-box-shadow: 4px 4px 8px 0px rgba(0,0,0,0.75);
+-moz-box-shadow: 4px 4px 8px 0px rgba(0,0,0,0.75);
+box-shadow: 4px 4px 8px 0px rgba(0,0,0,0.75);
+}
+/* .turno *{
+  border: 1px dotted #000000;
+} */
+.row {
+  margin-bottom: 2px !important;
+}
+.p-x-5{
+  padding: 0px 5px 0px 5px !important;
+}
+.turno span{
+  color: #000000;
+}
+#filtros{
+  height: 8vh;
+  text-align: right;
+}
+.filtro{
+  border: none;
+    border-radius: 2px;
+    display: inline-block;
+    height: 30px;
+    line-height: 30px;
+    padding: 0 16px;
+    margin: 3vw 3vw 3vw 0px;
+    text-transform: uppercase;
+    vertical-align: middle;
+    -webkit-tap-highlight-color: transparent;
+    text-decoration: none;
+    color: #fff;
+    background-color: #005194;
+    text-align: center;
+    letter-spacing: .5px;
+    -webkit-transition: background-color .2s ease-out;
+    transition: background-color .2s ease-out;
+    cursor: pointer;
+}
+.btnsmall{
+    letter-spacing: 0px !important;
+    font-size: 10px !important;
+    padding: 0px 10px 0px;
+    height: 30px;
+    line-height: 30px;
+}
+.form-control{
+  height: auto;
+  border: none;
+  padding: 0px;
+
 }
