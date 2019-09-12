@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "365602737145",
+    "firebase_url": "https://turno-1554146989867.firebaseio.com",
+    "project_id": "turno-1554146989867",
+    "storage_bucket": "turno-1554146989867.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:365602737145:android:5fbac43018481cdb350b28",
+        "android_client_info": {
+          "package_name": "com.velezoft.turnoapp"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "365602737145-fc2cmm82b3ikvjola3r1behn17ok3sum.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDuRx7U5quLMbMF25_UeT2YDxbwFK3GVbU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "365602737145-fc2cmm82b3ikvjola3r1behn17ok3sum.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -1,9 +1,29 @@
+body
+{
+  margin: 0;
+  padding: 0;
+  color: #9a9a9a;
+  font-family: "Avenir Next", "Avenir", sans-serif;
+}
+
+a
+{
+  text-decoration: none;
+  color: #cdcdcd;;
+  
+  transition: color 0.3s ease;
+}
+
+a:hover
+{
+  color: tomato !important; 
+}
 .content{
     background-color: white;
     margin: 2vh 5vw 2vh;
 }
 .titulo{
-    margin-left: 10vw;
+    margin-left: 15vw;
 }
 .categoria, .subcategoria, #contEstab{
     margin: 0vh 2vh 3vh;

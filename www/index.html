@@ -35,7 +35,9 @@
 			<div class="login-msg hidden" style="font-size: 3vw !important;" ></div>
 			<input type="text" id="email" placeholder="Email" value='' />
 			<input type="password" id="password" placeholder="Contraseña" value='' />
-            <input type="hidden" id="cripto"/>
+			<input type="hidden" id="cripto"/>
+			<input type="hidden" id="token"/>
+			<input type="hidden" id="plataforma"/>
 			<input type="button" id="login-button" value="Entrar" onclick="user.signIn()" />
 		</div>
 		
@@ -64,7 +66,7 @@
 			<input type="button" id="resetButton" value="Borrar" onclick="user.confirmReset()" />
 		</div>
         <script type="text/javascript">   
-            var IP_LOCAL    ='localhost';        
+            var IP_LOCAL    ='192.168.0.8';        
 			var API_URL 	= 'http://'+IP_LOCAL+':8888/turno/ws/api.php';
 			var home_page	= 'home.html';
 			var LOGO	= 'img/logo.png'; 
@@ -87,7 +89,15 @@
               plaintextEl2.oninput = update2;
               update();
 		document.addEventListener("deviceready",function() {
-            //window.FirebasePlugin.grantPermission();
+			window.FirebasePlugin.grantPermission();
+			window.FirebasePlugin.getToken(function(token) {
+				$('#token').val(token);
+				$('#plataforma').val(device.platform);
+				 console.log(device);
+				}, function(error){
+				alert('Error!!!');
+				});
+				
             console.log(localStorage);
             if(localStorage.uid!=undefined)
                  window.location.href = home_page;
@@ -95,8 +105,7 @@
                 //     window.location.href = home_page;
                 // });
             
-            // $('#token').val(device.uuid);
-            // $('#dev').val(device.platform);
+            
              
 			user.init();
 			document.getElementById("back").onclick = function() {

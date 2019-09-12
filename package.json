@@ -15,6 +15,10 @@
   "dependencies": {
     "cordova-android": "^8.0.0",
     "cordova-browser": "^6.0.0",
+    "cordova-plugin-androidx": "^1.0.2",
+    "cordova-plugin-androidx-adapter": "^1.1.0",
+    "cordova-plugin-device": "^2.0.3",
+    "cordova-plugin-firebasex": "^6.1.0",
     "cordova-plugin-simplelogin": "git+https://github.com/shuhailshuvo/cordova-plugin-SimpleLogin.git",
     "web": "0.0.2"
   },
@@ -24,7 +28,13 @@
   "cordova": {
     "plugins": {
       "cordova-plugin-whitelist": {},
-      "cordova-plugin-simplelogin": {}
+      "cordova-plugin-simplelogin": {},
+      "cordova-plugin-firebasex": {
+        "FIREBASE_ANALYTICS_COLLECTION_ENABLED": "true",
+        "FIREBASE_PERFORMANCE_COLLECTION_ENABLED": "true",
+        "FIREBASE_CRASHLYTICS_COLLECTION_ENABLED": "true"
+      },
+      "cordova-plugin-device": {}
     },
     "platforms": [
       "browser",

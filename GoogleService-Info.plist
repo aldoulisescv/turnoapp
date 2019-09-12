@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CLIENT_ID</key>
+	<string>365602737145-e1nc44dgrsdjrus5mpokcqia1vet0lop.apps.googleusercontent.com</string>
+	<key>REVERSED_CLIENT_ID</key>
+	<string>com.googleusercontent.apps.365602737145-e1nc44dgrsdjrus5mpokcqia1vet0lop</string>
+	<key>API_KEY</key>
+	<string>AIzaSyBIKr1cwLV_U5lh0NXZGzubmzjVApx-ed0</string>
+	<key>GCM_SENDER_ID</key>
+	<string>365602737145</string>
+	<key>PLIST_VERSION</key>
+	<string>1</string>
+	<key>BUNDLE_ID</key>
+	<string>com.velezoft.turnoapp</string>
+	<key>PROJECT_ID</key>
+	<string>turno-1554146989867</string>
+	<key>STORAGE_BUCKET</key>
+	<string>turno-1554146989867.appspot.com</string>
+	<key>IS_ADS_ENABLED</key>
+	<false></false>
+	<key>IS_ANALYTICS_ENABLED</key>
+	<false></false>
+	<key>IS_APPINVITE_ENABLED</key>
+	<true></true>
+	<key>IS_GCM_ENABLED</key>
+	<true></true>
+	<key>IS_SIGNIN_ENABLED</key>
+	<true></true>
+	<key>GOOGLE_APP_ID</key>
+	<string>1:365602737145:ios:b1df4c73e8cb52d9350b28</string>
+	<key>DATABASE_URL</key>
+	<string>https://turno-1554146989867.firebaseio.com</string>
+</dict>
+</plist>

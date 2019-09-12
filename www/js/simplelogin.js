@@ -53,82 +53,6 @@ var user = {
 
         });
 	},
-	cargaAlertas: function(aid='',elmodal){
-		
-		var param = {task:"getMyReports",id:aid};
-		$(elmodal).empty();
-        var res = user.verify('', param).done(function(response){
-        	if (response!=0) {
-        		$.each( response, function( i, val ) {
-	        		if(val.EstatusId == 4 || val.EstatusId ==1){
-	        			if(val.EstatusId == 1){
-	        				clase = 'list-group-item-warning enespera';
-	        				texto = 'En espera';
-	        			}else{
-	        				clase = 'list-group-item-success atendiendo';
-	        				texto = 'Atendiendo';
-	        			}
-	        			var html = '<a href="#" class="list-group-item ">';
-	        			html += '<div class="row"><h4 class="col-xs-8 list-group-item-heading">'+val.TiporeporteDescripcion+'</h4>';
-	        			html += '<div class="col-xs-4 "><div class="'+clase+'">'+texto+'</div></div>';
-	                	html += '</div><p class="list-group-item-text">'+val.ReporteRegistro+'</p>';
-	                	html += '<p class="list-group-item-text" style="font-size: 1.5vh;">'+val.ReporteDireccionDetalle+'</p>';
-	              		html += '</a> ';
-	        			$(elmodal).append(html);
-	        		}		  
-				});
-        	}else{
-        		var html = '<h4>No cuenta con alertas creadas</h4>';
-        		$(elmodal).append(html);
-        	}
-        	
-
-        });
-	},
-	cargaDetalleAlerta: function(aid='',elmodal){
-		var param = {task:"getReporteDetail",id:aid};
-		$(elmodal).empty();
-		$('.panel').empty();
-		$('.accordion').removeClass("active");
-		$('#accordion'+aid).addClass("active");
-        var res = user.verify('', param).done(function(response){
-        	if (response!=0) {
-	        		var html = '<div >';		
-						html += '<b>Comentarios</b>';
-						html += '<div class="row" style="font-size: 1.5vh;">';
-							html += '<div class="col-xs-6">Del Colono:</div>';
-							html += '<div class="col-xs-6 ">Del guardia:</div>';
-						html += '</div>';
-						html += '<div class="row">';
-							html += '<div class="col-xs-6">'+response.ReporteComentario+'</div>';
-							html += '<div class="col-xs-6 " style="overflow: scroll;height: 6vh;">';
-							html += response.RazonCancelado+'</div>';
-						html += '</div>';
-						html += '<div id="elmapita" style="background: aqua;height: 17vh;">';
-							html += 'Aqui va el mapita';
-						html += '</div>';
-					html += '</div>';
-					$(elmodal).append(html);
-        	}else{
-        		var html = '<h4>No cuenta con alertas creadas</h4>';
-        		$(elmodal).append(html);
-        	}
-        	
-
-        });
-	},
-	cargaDatosUsuario: function(aid=''){
-		var param = {task:"getColonoData",id:aid};
-        var res = user.verify('', param).done(function(response){
-        	if (response!=0) {
-        		$('#elnombre').text(response.Nombre);
-        		$('#elcorreo').text(response.Correo);
-        		$('#ladireccion').text(response.Direccion);
-        		$('#eltelefono').text(response.Telefono);
-        	}       	
-
-        });
-	},
 	cambiarPass: function(json=''){
         var res = user.verify('', json).done(function(response){
 
@@ -162,65 +86,7 @@ var user = {
 
         });
 	},
-	cargaHistorico: function(param='',elmodal){
-		$(elmodal).empty();
-        var res = user.verify('', param).done(function(response){
-        	if (response!=0) {
-        		
-        		$.each( response, function( i, val ) {
-	        		if(val.EstatusId == '5' || val.EstatusId =='6'){
-	        			if(val.EstatusId == 5){
-	        				clase = 'list-group-item-info resuelto';
-	        				texto = 'Resuelto';
-	        			}else{
-	        				clase = 'list-group-item-danger cancelado';
-	        				texto = 'Cancelado';
-	        			}
-		        		var html = '<div id= "accordion'+val.ReporteId+'" class="list-group-item" value="'+val.ReporteId+'">';
-								html += '<div class="row">';
-									html += '<h4 class="col-xs-8 list-group-item-heading">'+val.TiporeporteDescripcion+'</h4>';
-									html += '<div class="col-xs-4 ">	';
-										html += '<div class="'+clase+'">'+texto+'';
-										html += '</div>';
-									html += '</div>';
-								html += '</div>';								
-								
-								html += '<div class="row">';
-									html += '<div class="col-xs-8 ">	';
-										html += '<p class="list-group-item-text">'+val.ReporteRegistro+'</p>';
-										html += '<p class=" list-group-item-text" style="font-size: 1.5vh;">'+val.ReporteDireccionDetalle+'</p>';
-									html += '</div>';
-									
-									html += '<div class="col-xs-4 "><div style="  padding: 0vh 3vh;">	';
-										html += '<a rel="nofollow" href="https://maps.google.com/?q='+val.ReporteLatitud+','+val.ReporteLongitud+'" target="_blank"><img src="https://img.icons8.com/color/1600/google-maps.png" alt="Ver en Google Maps" width="42" height="42"></a>';
-									html += '</div></div>';
-								html += '</div>';
-								html += '<b>Comentarios</b>';
-								html += '<div class="row" style="font-size: 1.5vh;">';
-									html += '<div class="col-xs-6">Del Colono:</div>';
-									html += '<div class="col-xs-6 ">Del guardia:</div>';
-								html += '</div>';
-								html += '<div class="row">';
-									html += '<div class="col-xs-6">'+val.ReporteComentario+'</div>';
-									html += '<div class="col-xs-6 " style="overflow: scroll;height: 6vh;">';
-									html += val.ComentarioFinal+'</div>';
-								html += '</div>';
-							html += '</div>';
-							// html += '<div class="panel" id="panel'+val.ReporteId+'">';
-							// html += '</div>';
-						$(elmodal).append(html);
-					}		  
-				});
-        	}else{
-        		var html = '<h4>No cuenta con alertas creadas</h4>';
-        		$(elmodal).append(html);
-        	}
-        	
-
-        });
-	},
 	signUp: function(show=0){
-		console.log('signUp');
 		if(show == 1){
 			$('.login-form').hide();
 			$('#registration').show();
@@ -230,13 +96,8 @@ var user = {
 			var em = $('#em').val();
 			var tel  = $('#tel').val();
 			var ps  = $('#cripto').val().toUpperCase();
-			var utoken  = $('#utoken').val();
 			var ape  = $('#ape').val();
 			var uname  = $('#uname').val();
-            // if(udev.includes("iOS"))
-            //     udev = 1;
-            // else if(udev.includes("Android"))
-            //     udev = 0;
 			if(em!='' && nom!=''  && tel!=''  && ps!=''  && ape!='' && uname!=''){
 				$('.login-msg').hide();
 				$('#WaitIcon').show();
@@ -268,11 +129,13 @@ var user = {
 			$('#back').show();
 		}else{
 			var email = $('#email').val();
-            var pass = $('#cripto').val().toUpperCase();
+			var pass = $('#cripto').val().toUpperCase();
+			var token=$('#token').val();
+			var plataforma=$('#plataforma').val();
             if(email!='' && pass!=''){
 				$('.login-msg').hide();
 				$('#WaitIcon').show();
-				var param = {task:"login",em:email,ps:pass};
+				var param = {task:"login",em:email,ps:pass,tkn:token,plat:plataforma};
 				var msg = "";
 				var response = user.verify('', param).done(function(response){
                     switch (response.estatus) {
@@ -299,6 +162,7 @@ var user = {
 							console.log("logueado como "+response.nombreCompleto);
                             localStorage.unom = response.nombreCompleto;
                             localStorage.uid = response.usuarioId;
+                            localStorage.token = response.token;
                             localStorage.uemail = response.email;
 							localStorage.utel = response.telefono;
 							window.location.href = home_page;

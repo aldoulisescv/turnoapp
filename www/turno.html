@@ -7,13 +7,16 @@
     <script type="text/javascript" src="cordova.js"></script>
        
     <!--Import Google Icon Font-->
+
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap-theme.min.css">
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 	<link href="css/simplelogin.css" rel="stylesheet" type="text/css" />
     <link href="css/home.css" rel="stylesheet" type="text/css" />
     <style type='text/css'>:root {--bodyBGcolor: #ffffff;--bodyTXcolor: #000000;--bordercolor:#019498;}</style>
     <link href="css/turno.css" rel="stylesheet" type="text/css" />
     <script src="js/simplelogin.js"></script>   
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datetimepicker/4.17.37/css/bootstrap-datetimepicker.min.css" />
+    
     <link rel="stylesheet" type="text/css" href="slick/slick.css"/>
     <link rel="stylesheet" type="text/css" href="slick/slick-theme.css"/>
   </head>
@@ -102,18 +105,17 @@
         
         
     </div>
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap-theme.min.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datetimepicker/4.17.37/css/bootstrap-datetimepicker.min.css" />
  
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
     <script src="js/moment.min.js"></script>
     <script src="js/bootstrap-datetimepicker.min.js"></script>
     <script src="js/bootstrap-datetimepicker.es.js"></script>
     <script type="text/javascript" src="slick/slick.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@8"></script>
     <script type="text/javascript">
-    var IP_LOCAL    = 'localhost';        
+    var IP_LOCAL    = '192.168.0.8';        
     var API_URL 	= 'http://'+IP_LOCAL+':8888/turno/ws/api.php';
     var home_page	= 'home.html';
     var estabId ;
@@ -124,8 +126,10 @@
     }
     $('#main').click(function (event) {
         var obj = $(event.target);
-        if (obj[0].id == "main"  && $('#togglecheck').prop('checked') == true ){
-          $('#togglecheck').trigger('click');
+        if(obj[0].id != "togglecheck" ){
+          if ((obj[0].id != "menu")  && $('#togglecheck').prop('checked') == true ){
+            $('#togglecheck').trigger('click');
+          }
         }
     });
     $(document).ready(function(){
@@ -135,11 +139,18 @@
         $('#lashoras').hide();
         
         $('#datetimepicker').datetimepicker({
-            format:'MM-DD-YYYY',
+            format:'YYYY/MM/DD',
             autoclose: true,
             keepOpen: false,
-            useCurrent: false
+            useCurrent: false,
+            startDate: moment().subtract(1, 'days')._d
         });
+        function getFormattedDate(date) {
+            var day = date.getDate();
+            var month = date.getMonth() + 1;
+            var year = date.getFullYear();
+            return year + '/' + month + '/' + day;
+        }
         $(".arrow").on("click", function() {
             var target=$(this).attr('target');
             target=new Date(target);
@@ -147,7 +158,7 @@
             var date= (target.getDate()<10)?'0'+target.getDate():target.getDate();
             var month= (target.getMonth()<10)?'0'+target.getMonth():target.getMonth()
             month = parseInt(month)+1;
-            var fe= month+'-'+date +'-'+target.getFullYear();
+            var fe= target.getFullYear()+'/'+month +'/'+date;
             $('#datetimepicker').val(fe).trigger('change');
         });
         $("#datetimepicker").on("change", function() {
@@ -170,7 +181,7 @@
             targetprev.setDate(targetprev.getDate()-1);
             $('#arrowprev').attr('target', targetprev);
             $('.arrow').show();
-            dia=dia.substring(6,10)+'-'+dia.substring(3,5)+'-'+dia.substring(0,2);
+            dia=dia.substring(0,4)+'-'+dia.substring(5,7)+'-'+dia.substring(8,10);
             $.getJSON(API_URL+"?task=getSesionesDia&dia="+dia+"&estab="+estabId+"&dayofweek="+dayofweek, function(data) {
                 data= removeDuplicates(data, 'tipoSesionId');
                 $('#seltiposesion').empty();
@@ -213,6 +224,14 @@
                     showCancelButton: true,
                 }).then((result) => {
                     if (result.value) {
+                        console.log(API_URL+"?task=setTurno"+
+                            "&establecimientoId="+estabId+
+                            "&usuarioId="+localStorage.uid+
+                            "&recursoId="+recurso+
+                            "&tipoSesionId="+lasesion+
+                            "&fecha="+fecha+
+                            "&horainicio="+horainicio+
+                            "&horafin="+data.horafin)
                         $.getJSON(API_URL+"?task=setTurno"+
                             "&establecimientoId="+estabId+
                             "&usuarioId="+localStorage.uid+
@@ -222,7 +241,10 @@
                             "&horainicio="+horainicio+
                             "&horafin="+data.horafin,
                         function(data) {
+                            console.log('algo');
+                            console.log(data);
                             if(data.ws_error=='0'){
+                                console.log('funciona');
                                 Swal.fire(
                                     'Listo!',
                                     'El turno número '+data.turnoId+' ha sido agendado',
