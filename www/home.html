@@ -130,15 +130,36 @@
                 </ul>
               </div>
     </div>
+    <script src="js/variables.js"></script>
     <script type="text/javascript">
-    var IP_LOCAL    = '192.168.0.8';        
-    var API_URL 	= 'http://'+IP_LOCAL+':8888/turno/ws/api.php';
-    var home_page	= 'home.html';
-    
+    document.addEventListener("deviceready",function() {
+      window.FirebasePlugin.grantPermission();
+      window.FirebasePlugin.onMessageReceived((res) => {
+            if(res.tap) {
+              // background mode
+              console.log("background");
+              console.log(res);
+            } else if (!res.tap) {
+              // foreground mode
+              console.log("foreground");
+              console.log(res);
+              if(res.opcion){
+                switch (res.opcion) {
+                  case 'visto':
+                      $('#estatus'+res.turnoId).addClass('vista');
+                      console.log($('#estatus'+res.turnoId));
+                    break;
+                
+                  default:
+                    break;
+                }
+              }
+            }
+         });
+      
+    });
     $('#main').click(function (event) {
         var obj = $(event.target);
-        console.log('clic');
-        console.log(obj);
         if(obj[0].id != "togglecheck" ){
           if ((obj[0].id != "menu")  && $('#togglecheck').prop('checked') == true ){
             $('#togglecheck').trigger('click');
@@ -147,6 +168,7 @@
         
     });
     $(document).ready(function(){
+      
       var d = new Date();
       var date= (d.getDate()<10)?'0'+d.getDate():d.getDate();
       var month= (d.getMonth()<10)?'0'+d.getMonth():d.getMonth()
@@ -200,18 +222,23 @@
       url+=(desde)?'&desde='+desde:'';
       url+=(hasta)?'&hasta='+hasta:'';
       url+=(estab)?'&estab='+estab:'';
+      console.log(url);
       $.getJSON(url,
         function(data) {
           if(data.length>0){
             $.each(data, function (key, value) {
-              console.log(value);
-              fecha = new Date(value.fecha);
-              var options = { year: 'numeric', month: 'long', day: 'numeric' };
-              console.log(
-                  fecha= fecha.toLocaleDateString("es-ES", options)
+              fecha = new Date(
+                value.fecha.substring(0,4),
+                parseInt(value.fecha.substring(5,7))-1, 
+                value.fecha.substring(8,10)
               );
+              var options = { year: 'numeric', month: 'long', day: 'numeric' };
+              
+                  fecha= fecha.toLocaleDateString("es-ES", options)
+              hora_vista=(value.hora_vista!=null)?'vista':'';
+              console.log(hora_vista);
               muestraTurno(value.turnoId, value.estabId,value.estabNombre, value.estatusId, value.estatusNombre, 
-              value.sesionId,value.sesionNombre, value.recursoId, value.recursoNombre, fecha, value.horaInicio, value.horaFin )
+              value.sesionId,value.sesionNombre, value.recursoId, value.recursoNombre, fecha, value.horaInicio, value.horaFin, hora_vista )
             });
           }else{
             $('#turnos').append('<div class="row"><div class="col"><h5>No hay turnos disponibles</h5></div></div>');
@@ -220,7 +247,7 @@
         });
     }
     function muestraTurno(turnoId, estabId,estabNombre, estatusId, estatusNombre, 
-                        sesionId, sesionNombre, recursoId, recursoNombre, fecha, horaInicio, horaFin) {
+                        sesionId, sesionNombre, recursoId, recursoNombre, fecha, horaInicio, horaFin, hora_vista) {
       var html='';
             html+='<div id="turno'+turnoId+'"class="turno '+estatusNombre+'">';
               html+='<div class="row">';
@@ -236,7 +263,7 @@
                         html+='<small>Turno #'+turnoId+'</small>';
                       html+='</div>';
                       html+='<div class="col-xs-12 p-x-5">';
-                        html+='<small>'+estatusNombre+'</small>';
+                        html+='<small id="estatus'+turnoId+'" class="'+hora_vista+'">'+estatusNombre+'</small>';
                       html+='</div>';
                     html+='</div>';
                   html+='</div>';

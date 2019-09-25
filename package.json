@@ -17,9 +17,12 @@
     "cordova-browser": "^6.0.0",
     "cordova-plugin-androidx": "^1.0.2",
     "cordova-plugin-androidx-adapter": "^1.1.0",
+    "cordova-plugin-badge": "^0.8.8",
     "cordova-plugin-device": "^2.0.3",
     "cordova-plugin-firebasex": "^6.1.0",
+    "cordova-plugin-local-notification": "^0.9.0-beta.2",
     "cordova-plugin-simplelogin": "git+https://github.com/shuhailshuvo/cordova-plugin-SimpleLogin.git",
+    "cordova-plugin-vibration": "^3.1.1",
     "web": "0.0.2"
   },
   "devDependencies": {
@@ -34,7 +37,9 @@
         "FIREBASE_PERFORMANCE_COLLECTION_ENABLED": "true",
         "FIREBASE_CRASHLYTICS_COLLECTION_ENABLED": "true"
       },
-      "cordova-plugin-device": {}
+      "cordova-plugin-device": {},
+      "cordova-plugin-local-notification": {},
+      "cordova-plugin-vibration": {}
     },
     "platforms": [
       "browser",

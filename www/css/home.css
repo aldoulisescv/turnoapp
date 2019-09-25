@@ -46,7 +46,12 @@
 * production code, beware of the browser
 * prefixes.
 */
-
+small.vista::after{
+  display: block;
+  content: "\f06e";
+  font-family: "FontAwesome";
+  transform-origin: top center;
+}
 body
 {
   margin: 0;

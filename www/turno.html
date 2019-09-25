@@ -109,16 +109,15 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
-    <script src="js/moment.min.js"></script>
+    <script src="js/moment.min.js"></script> 
+    <script src="js/variables.js"></script>
     <script src="js/bootstrap-datetimepicker.min.js"></script>
     <script src="js/bootstrap-datetimepicker.es.js"></script>
     <script type="text/javascript" src="slick/slick.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@8"></script>
     <script type="text/javascript">
-    var IP_LOCAL    = '192.168.0.8';        
-    var API_URL 	= 'http://'+IP_LOCAL+':8888/turno/ws/api.php';
-    var home_page	= 'home.html';
-    var estabId ;
+    
+    
     document.addEventListener("backbutton", onBackKeyDown, false);  
         function onBackKeyDown(e) { 
         e.preventDefault(); 
@@ -208,7 +207,7 @@
             var lasesion=$('#seltiposesion').val();
             var horainicio=$('#'+momid+' > .horamin').text();
             var fecha=$('#datetimepicker').val();
-            fecha=fecha.substring(6,10)+'-'+fecha.substring(0,2)+'-'+fecha.substring(3,5);
+            fecha=fecha.substring(0,4)+'-'+fecha.substring(5,7)+'-'+fecha.substring(8,10);
             $.getJSON(API_URL+"?task=getDataforTurno&horainicio="+horainicio+"&sesion="+lasesion, function(data) {
                 Swal.fire({
                     type: 'question',
@@ -276,7 +275,7 @@
             var dayofweek = weekday[d.getDay()];
             var f=$("#datetimepicker").val();
             $('#lashoras').show();
-            dia=dia.substring(6,10)+'-'+dia.substring(0,2)+'-'+dia.substring(3,5);
+            dia=dia.substring(0,4)+'-'+dia.substring(5,7)+'-'+dia.substring(8,10);
             $.getJSON(API_URL+"?task=getRecursosDisponibles&tiposesion="+$(this).val()+"&estab="+estabId+"&dayofweek="+dayofweek, function(data) {
                 var i = new Date(f);
                 var manana=new Date(f);
