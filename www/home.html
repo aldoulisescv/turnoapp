@@ -134,6 +134,26 @@
     <script type="text/javascript">
     document.addEventListener("deviceready",function() {
       window.FirebasePlugin.grantPermission();
+      window.FirebasePlugin.onTokenRefresh(function(token) {
+        var url=API_URL+"?task=refreshToken&user="+localStorage.uid+"&tkn="+token+"&plat="+device.platform;
+        console.log(url);
+        $.getJSON(url,
+          function(data) {
+            console.log(data);
+          }
+        );
+      }, function(error) {
+          console.error(error);
+      });
+      window.FirebasePlugin.getToken(function(token) {
+				var url=API_URL+"?task=refreshToken&user="+localStorage.uid+"&tkn="+token+"&plat="+device.platform;
+				console.log("2.-  "+url);
+        $.getJSON(url,
+					function(data) {
+						console.log(data);
+					}
+				);
+      });
       window.FirebasePlugin.onMessageReceived((res) => {
             if(res.tap) {
               // background mode

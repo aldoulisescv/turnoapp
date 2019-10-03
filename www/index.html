@@ -89,12 +89,28 @@
               update();
 		document.addEventListener("deviceready",function() {
 			window.FirebasePlugin.grantPermission();
+			window.FirebasePlugin.onTokenRefresh(function(token) {
+				var url=API_URL+"?task=refreshToken&user="+localStorage.uid+"&tkn="+token+"&plat="+device.plataform;
+				$.getJSON(url,
+				function(data) {
+					console.log(data);
+				}
+				);
+			}, function(error) {
+				console.error(error);
+			});
 			window.FirebasePlugin.getToken(function(token) {
+				var url=API_URL+"?task=refreshToken&user="+localStorage.uid+"&tkn="+token+"&plat="+device.platform;
+				$.getJSON(url,
+					function(data) {
+						console.log(data);
+					}
+				);
 				$('#token').val(token);
 				$('#plataforma').val(device.platform);
 				 console.log(device);
 				}, function(error){
-				alert('Error!!!');
+					alert('Error!!!');
 				});
 				
             console.log(localStorage);

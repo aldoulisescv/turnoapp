@@ -10,6 +10,7 @@
 
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap-theme.min.css">
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
 	<link href="css/simplelogin.css" rel="stylesheet" type="text/css" />
     <link href="css/home.css" rel="stylesheet" type="text/css" />
     <style type='text/css'>:root {--bodyBGcolor: #ffffff;--bodyTXcolor: #000000;--bordercolor:#019498;}</style>
@@ -86,12 +87,16 @@
                                 </div>
                                 <div class="row">
                                     <div class="col-sm-12">
-                                            <select class="form-control" id="seltiposesion">
-                                                    <option value="" disabled selected>No hay opciones diponibles para esta fecha</option>    
-                                            </select>
+                                        <button class="btn hide" id="tiposesion" style="width: 100%;">Selecciona una fecha</button>
+                                            <select class="form-control hide" id="seltiposesion">
+                                                     </select> 
                                     </div>
                                 </div>
+                                <div id="seleccionado" class="col-sm-12">
+
+                                </div>
                                 <div id="lashoras" class="col-sm-12">
+                                        
                                 </div>
                             </div>
                         </div>
@@ -162,6 +167,7 @@
         });
         $("#datetimepicker").on("change", function() {
             $('#lashoras').hide();
+            $('#seleccionado').empty();
             var dia=$(this).val();
             var d = new Date(dia);
             var weekday = new Array(7);
@@ -184,17 +190,21 @@
             $.getJSON(API_URL+"?task=getSesionesDia&dia="+dia+"&estab="+estabId+"&dayofweek="+dayofweek, function(data) {
                 data= removeDuplicates(data, 'tipoSesionId');
                 $('#seltiposesion').empty();
+                $('#tiposesion').removeClass('hide');
                 if(data.length>0){
-                    $('#seltiposesion').append('<option value="" disabled selected>Selecciona una sesión</option>');
                     $.each(data, function (key, entry) {
                         var html='<option value="'+entry.tipoSesionId+'">'+entry.nombre+'</option>';
                         $('#seltiposesion').append(html);
                     });
+
+                    $('#tiposesion').removeAttr('disabled');
+                    $('#tiposesion').text('Hay '+data.length+' servicio(s) disponible(s)');
                 }else{
-                    $('#seltiposesion').append('<option value="" disabled selected>No hay opciones diponibles para esta fecha</option>');
+                    $('#tiposesion').text('No hay opciones diponibles para esta fecha');
+                    $('#tiposesion').attr('disabled', 'disabled');
                 }
                 $('#datetimepicker').data("DateTimePicker").hide();
-                $('#seltiposesion').focus();
+                $('#tiposesion').focus();
                 
             });
         });
@@ -223,14 +233,6 @@
                     showCancelButton: true,
                 }).then((result) => {
                     if (result.value) {
-                        console.log(API_URL+"?task=setTurno"+
-                            "&establecimientoId="+estabId+
-                            "&usuarioId="+localStorage.uid+
-                            "&recursoId="+recurso+
-                            "&tipoSesionId="+lasesion+
-                            "&fecha="+fecha+
-                            "&horainicio="+horainicio+
-                            "&horafin="+data.horafin)
                         $.getJSON(API_URL+"?task=setTurno"+
                             "&establecimientoId="+estabId+
                             "&usuarioId="+localStorage.uid+
@@ -240,10 +242,7 @@
                             "&horainicio="+horainicio+
                             "&horafin="+data.horafin,
                         function(data) {
-                            console.log('algo');
-                            console.log(data);
                             if(data.ws_error=='0'){
-                                console.log('funciona');
                                 Swal.fire(
                                     'Listo!',
                                     'El turno número '+data.turnoId+' ha sido agendado',
@@ -260,6 +259,52 @@
                 });
             });
             
+        });
+        $('body').on('click','#tiposesion', function() {
+            var elhtml=seleccionado="";
+            var dia=$('#datetimepicker').val();
+            var d = new Date(dia);
+            var weekday = new Array(7);
+            weekday[1] = "L";
+            weekday[2] = "M";
+            weekday[3] = "X";
+            weekday[4] = "J";
+            weekday[5] = "V";
+            weekday[6] = "S";
+            weekday[0] =  "D";
+            var dayofweek = weekday[d.getDay()];
+            dia=dia.substring(0,4)+'-'+dia.substring(5,7)+'-'+dia.substring(8,10);
+            $.getJSON(API_URL+"?task=getSesionesDia&dia="+dia+"&estab="+estabId+"&dayofweek="+dayofweek, function(data) {
+                data= removeDuplicates(data, 'tipoSesionId');
+                console.log(data);
+                if(data.length>0){
+                    $.each(data, function (key, entry) {
+                        elhtml+='<div class="rows">'
+                            +'  <div class="elradio col-xs-2">'
+                            +'    <input id="radio-'+entry.tipoSesionId+'" tid="'+entry.tipoSesionId+'"  tnombre="'+entry.nombre+'" tttot="'+entry.tiempoTotal+'" tco="'+entry.costo+'" class="radio-custom" name="radio" type="radio" >'
+                            +'  </div>'
+                            +'  <div class="eltexto col-xs-10">'
+                            +'    <label for="radio-'+entry.tipoSesionId+'" class="radio-custom-label">'+entry.nombre+' <span class="badge badge-primary"><i class="fa fa-clock-o" aria-hidden="true"></i> '+entry.tiempoTotal+'</span> <span class="badge  bg-warning text-dark">$'+entry.costo+'</span></label>'
+                            +'  </div>'
+                            +'</div>'
+                        
+                    });
+
+                    Swal.fire({
+                        title: 'Selecciona un servicio',
+                        html:elhtml,
+                        showCancelButton: true,
+                        showConfirmButton: false,
+                        cancelButtonColor: '#d33',
+                        focusCancel:true
+                        });
+                }
+            });
+        });
+        $('body').on('click','.radio-custom', function() {
+            $('#seltiposesion').val($(this).attr('tid')).trigger('change');
+            $('#seleccionado').html('<p class="radio-custom-label">'+$(this).attr('tnombre')+' <span class="badge badge-primary"><i class="fa fa-clock-o" aria-hidden="true"></i> '+$(this).attr('tttot')+'</span> <span class="badge  bg-warning text-dark">$'+$(this).attr('tco')+'</span></p>' )
+            Swal.close();
         });
         $('body').on('change','#seltiposesion', function() {
             var dia=$('#datetimepicker').val();
@@ -420,6 +465,7 @@
                 $('#subcategoria').hide();
                 $('#establecimiento').hide();
                 $('#lashoras').hide();
+                $('#seleccionado').empty();
                 estabId=data.establecimientoId;
                 //limpiar
             });
@@ -591,3 +637,75 @@
     
   </body>
 </html>
+<style>
+.radio-custom{
+    -webkit-appearance: none;
+    background-color: transparent;
+    height: auto !important;
+    width: auto !important;
+}
+  /* .elradio{
+    width: 10%;
+    float: left;
+} */
+.eltexto{
+   height: inherit;
+   display: flex;
+   align-items: center;
+} 
+ .checkbox-custom, .elradio  .radio-custom {
+    position: absolute;   
+}
+
+.checkbox-custom, .checkbox-custom-label,  .elradio  .radio-custom, .eltexto .radio-custom-label {
+    display: inline-block;
+    vertical-align: middle;
+    margin: 0px;
+    cursor: pointer;
+}
+
+.checkbox-custom-label, .eltexto .radio-custom-label {
+    position: relative;
+    width: 100%;
+}
+.radio-custom-label span{
+    float: right;
+}
+/* .checkbox-custom + .checkbox-custom-label:before, .elradio .radio-custom + .eltexto .radio-custom-label:before { */
+.elradio .radio-custom:before {
+    content: '';
+    background: #fff;
+    border: 2px solid #ddd;
+    display: inline-block;
+    vertical-align: middle;
+    width: 38px;
+    height: 38px;
+    padding: 2px;
+    margin-right: 10px;
+    text-align: center;
+    font-size: 30px;
+}
+.rows{
+    height: 38px;
+}
+/* .checkbox-custom:checked + .checkbox-custom-label:before {
+    content: "\f00c";
+    font-family: 'FontAwesome';
+    background: rebeccapurple;
+    color: #fff;
+} */
+
+.elradio .radio-custom:before {
+    border-radius: 50%;
+}
+
+.elradio .radio-custom:checked:before {
+    content: "\f00c";
+    font-family: 'FontAwesome';
+    color: #bbb;
+}
+
+.swal2-content{
+    text-align: justify !important;
+} 
+</style>
