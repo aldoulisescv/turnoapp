@@ -31,7 +31,7 @@
               <span></span>
               <ul id="menu">
                 <a href="home.html"><li>Inicio</li></a>
-                <a href="#"><li>About</li></a>
+                <a href="perfil.html"><li>Perfil</li></a>
                 <a href="#"><li>Info</li></a>
                 <a href="#" onclick="user.signOut()" ><li>Cerrar Sesión</li></a>
               </ul>
@@ -107,7 +107,9 @@
                 </div>
             </div>
         </div>
-        
+        <div id="noconnection">
+            <div>No hay conexión de internet</div>
+          </div>
         
     </div>
  
@@ -116,6 +118,7 @@
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
     <script src="js/moment.min.js"></script> 
     <script src="js/variables.js"></script>
+    <script src="js/device.js"></script>
     <script src="js/bootstrap-datetimepicker.min.js"></script>
     <script src="js/bootstrap-datetimepicker.es.js"></script>
     <script type="text/javascript" src="slick/slick.min.js"></script>
@@ -187,7 +190,7 @@
             $('#arrowprev').attr('target', targetprev);
             $('.arrow').show();
             dia=dia.substring(0,4)+'-'+dia.substring(5,7)+'-'+dia.substring(8,10);
-            $.getJSON(API_URL+"?task=getSesionesDia&dia="+dia+"&estab="+estabId+"&dayofweek="+dayofweek, function(data) {
+            $.getJSON(API_URL+"?task=getSesionesDia&dia="+dia+"&estab="+ESTABID+"&dayofweek="+dayofweek, function(data) {
                 data= removeDuplicates(data, 'tipoSesionId');
                 $('#seltiposesion').empty();
                 $('#tiposesion').removeClass('hide');
@@ -234,7 +237,7 @@
                 }).then((result) => {
                     if (result.value) {
                         $.getJSON(API_URL+"?task=setTurno"+
-                            "&establecimientoId="+estabId+
+                            "&establecimientoId="+ESTABID+
                             "&usuarioId="+localStorage.uid+
                             "&recursoId="+recurso+
                             "&tipoSesionId="+lasesion+
@@ -274,7 +277,7 @@
             weekday[0] =  "D";
             var dayofweek = weekday[d.getDay()];
             dia=dia.substring(0,4)+'-'+dia.substring(5,7)+'-'+dia.substring(8,10);
-            $.getJSON(API_URL+"?task=getSesionesDia&dia="+dia+"&estab="+estabId+"&dayofweek="+dayofweek, function(data) {
+            $.getJSON(API_URL+"?task=getSesionesDia&dia="+dia+"&estab="+ESTABID+"&dayofweek="+dayofweek, function(data) {
                 data= removeDuplicates(data, 'tipoSesionId');
                 console.log(data);
                 if(data.length>0){
@@ -321,7 +324,7 @@
             var f=$("#datetimepicker").val();
             $('#lashoras').show();
             dia=dia.substring(0,4)+'-'+dia.substring(5,7)+'-'+dia.substring(8,10);
-            $.getJSON(API_URL+"?task=getRecursosDisponibles&tiposesion="+$(this).val()+"&estab="+estabId+"&dayofweek="+dayofweek, function(data) {
+            $.getJSON(API_URL+"?task=getRecursosDisponibles&tiposesion="+$(this).val()+"&estab="+ESTABID+"&dayofweek="+dayofweek, function(data) {
                 var i = new Date(f);
                 var manana=new Date(f);
                 var ahora=new Date();
@@ -345,7 +348,7 @@
                 }
                 var data2 = uniqueBy(data, "recursoId").join(',');
                 cargaRecursos(data,f, ()=>{
-                    quitaOcupados(API_URL,dia,estabId,data2,f,data,()=>{
+                    quitaOcupados(API_URL,dia,ESTABID,data2,f,data,()=>{
                         quitaIncompletos(data);
                     });
                 });
@@ -466,7 +469,7 @@
                 $('#establecimiento').hide();
                 $('#lashoras').hide();
                 $('#seleccionado').empty();
-                estabId=data.establecimientoId;
+                ESTABID=data.establecimientoId;
                 //limpiar
             });
         }); 
@@ -545,9 +548,9 @@
         typeof callback === 'function' && callback(); 
         
     }
-    function quitaOcupados(API_URL,dia,estabId,data2,f,data,callback) {
+    function quitaOcupados(API_URL,dia,ESTABID,data2,f,data,callback) {
         //quita los turnos ocupados
-        $.getJSON(API_URL+"?task=getTurnosHoy&fecha="+dia+"&estab="+estabId+"&recursos="+data2, function(datos) {
+        $.getJSON(API_URL+"?task=getTurnosHoy&fecha="+dia+"&estab="+ESTABID+"&recursos="+data2, function(datos) {
             $.each(datos, function (key, value) {
                 var horaInicio = value.horaInicio.substring(0,2);
                 var horaFin = value.horaFin.substring(0,2);

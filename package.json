@@ -21,6 +21,7 @@
     "cordova-plugin-device": "^2.0.3",
     "cordova-plugin-firebasex": "^6.1.0",
     "cordova-plugin-local-notification": "^0.9.0-beta.2",
+    "cordova-plugin-network-information": "^2.0.2",
     "cordova-plugin-simplelogin": "git+https://github.com/shuhailshuvo/cordova-plugin-SimpleLogin.git",
     "cordova-plugin-vibration": "^3.1.1",
     "web": "0.0.2"
@@ -39,7 +40,8 @@
       },
       "cordova-plugin-device": {},
       "cordova-plugin-local-notification": {},
-      "cordova-plugin-vibration": {}
+      "cordova-plugin-vibration": {},
+      "cordova-plugin-network-information": {}
     },
     "platforms": [
       "browser",

@@ -35,7 +35,7 @@
               <span></span>
               <ul id="menu">
                 <a href="home.html"><li>Inicio</li></a>
-                <a href="#"><li>About</li></a>
+                <a href="perfil.html"><li>Perfil</li></a>
                 <a href="#"><li>Info</li></a>
                 <a href="#" onclick="user.signOut()" ><li>Cerrar Sesión</li></a>
               </ul>
@@ -56,24 +56,6 @@
                     </button>
                   </div>
                   <div class="modal-body">
-                      
-                      <!-- <div class="form-group form-group-default  ">
-                          <label style="font-weight: bold;" for="estado">Estado</label>
-                          <div class="btn-group btn-group-toggle form-control" data-toggle="buttons" >
-                              <label class="btn btnsmall btn btn-primary active">
-                                <input type="radio" name="estado" id="estadoagendado" value="1" autocomplete="off" checked> Agendado
-                              </label>
-                              <label class="btn btnsmall btn btn-primary">
-                                <input type="radio" name="estado" id="estadoatendido" value="2" autocomplete="off"> Atendido
-                              </label>
-                              <label class="btn btnsmall btn btn-primary">
-                                <input type="radio" name="estado" id="estadoatendiendo" value="3" autocomplete="off"> Atendiendo
-                              </label>
-                              <label class="btn btnsmall btn btn-primary">
-                                  <input type="radio" name="estado" id="estadocancelado" value="4" autocomplete="off"> Cancelado
-                                </label>
-                            </div>
-                      </div> -->
                        <div class="form-group form-group-default  ">
                           <label style="font-weight: bold;" for="orden">Orden por fecha:</label>
                           <div class="btn-group btn-group-toggle form-control" data-toggle="buttons" >
@@ -129,31 +111,18 @@
                   </li>
                 </ul>
               </div>
+              <div id="noconnection">
+                <div>No hay conexión de internet</div>
+              </div>
     </div>
+    
     <script src="js/variables.js"></script>
+    <script src="js/device.js"></script>
     <script type="text/javascript">
     document.addEventListener("deviceready",function() {
-      window.FirebasePlugin.grantPermission();
-      window.FirebasePlugin.onTokenRefresh(function(token) {
-        var url=API_URL+"?task=refreshToken&user="+localStorage.uid+"&tkn="+token+"&plat="+device.platform;
-        console.log(url);
-        $.getJSON(url,
-          function(data) {
-            console.log(data);
-          }
-        );
-      }, function(error) {
-          console.error(error);
-      });
-      window.FirebasePlugin.getToken(function(token) {
-				var url=API_URL+"?task=refreshToken&user="+localStorage.uid+"&tkn="+token+"&plat="+device.platform;
-				console.log("2.-  "+url);
-        $.getJSON(url,
-					function(data) {
-						console.log(data);
-					}
-				);
-      });
+      
+      
+      
       window.FirebasePlugin.onMessageReceived((res) => {
             if(res.tap) {
               // background mode
@@ -176,7 +145,6 @@
               }
             }
          });
-      
     });
     $('#main').click(function (event) {
         var obj = $(event.target);
@@ -194,7 +162,12 @@
       var month= (d.getMonth()<10)?'0'+d.getMonth():d.getMonth()
       month = parseInt(month)+1;
       var fe= d.getFullYear()+'-'+month+'-'+date;
-      traeTurnos("1,8", fe, null, null, 'asc');
+      FILTRO_ESTATUS="1,8";
+      FILTRO_DESDE=fe;
+      FILTRO_HASTA=null;
+      FILTRO_ESTAB=null;
+      FILTRO_ORDEN='asc'
+      traeTurnos(FILTRO_ESTATUS, FILTRO_DESDE, FILTRO_HASTA, FILTRO_ESTAB, FILTRO_ORDEN);
       $('.fixed-action-btn').floatingActionButton();
       $('#modalFiltro').on('shown.bs.modal', function () {
         var today = new Date();
@@ -229,11 +202,11 @@
       });
     });
     function filtrar() {
-      var orden=$('input[name="orden"]:checked').val();
-      var desde=($('#fechaDesde').val())?$('#fechaDesde').val():null;
-      var hasta=($('#fechaHasta').val())?$('#fechaHasta').val():null;
-      var estab=($('#establecimientos').val()!='0')?$('#establecimientos').val():null;
-      traeTurnos("1,8", desde, hasta, estab, orden);
+      var FILTRO_ORDEN=$('input[name="orden"]:checked').val();
+      var FILTRO_DESDE=($('#fechaDesde').val())?$('#fechaDesde').val():null;
+      var FILTRO_HASTA=($('#fechaHasta').val())?$('#fechaHasta').val():null;
+      var FILTRO_ESTAB=($('#establecimientos').val()!='0')?$('#establecimientos').val():null;
+      traeTurnos(FILTRO_ESTATUS, FILTRO_DESDE, FILTRO_HASTA, FILTRO_ESTAB, FILTRO_ORDEN);
     }
     function traeTurnos(estatus, desde, hasta, estab, orden) {
       $('#turnos').empty();
@@ -242,31 +215,40 @@
       url+=(desde)?'&desde='+desde:'';
       url+=(hasta)?'&hasta='+hasta:'';
       url+=(estab)?'&estab='+estab:'';
-      console.log(url);
-      $.getJSON(url,
-        function(data) {
-          if(data.length>0){
-            $.each(data, function (key, value) {
-              fecha = new Date(
-                value.fecha.substring(0,4),
-                parseInt(value.fecha.substring(5,7))-1, 
-                value.fecha.substring(8,10)
-              );
-              var options = { year: 'numeric', month: 'long', day: 'numeric' };
-              
-                  fecha= fecha.toLocaleDateString("es-ES", options)
-              hora_vista=(value.hora_vista!=null)?'vista':'';
-              console.log(hora_vista);
-              muestraTurno(value.turnoId, value.estabId,value.estabNombre, value.estatusId, value.estatusNombre, 
-              value.sesionId,value.sesionNombre, value.recursoId, value.recursoNombre, fecha, value.horaInicio, value.horaFin, hora_vista )
-            });
-          }else{
-            $('#turnos').append('<div class="row"><div class="col"><h5>No hay turnos disponibles</h5></div></div>');
+        $.ajax({
+            async: true,
+            url: url,
+            type: 'GET',
+            success: function (data) {
+                console.log(data);
+                if(data.length>0){
+              $.each(data, function (key, value) {
+                fecha = new Date(
+                  value.fecha.substring(0,4),
+                  parseInt(value.fecha.substring(5,7))-1, 
+                  value.fecha.substring(8,10)
+                );
+                var options = { year: 'numeric', month: 'long', day: 'numeric' };
+                
+                    fecha= fecha.toLocaleDateString("es-ES", options)
+                hora_vista=(value.hora_vista!=null)?'vista':'';
+                console.log(hora_vista);
+                muestraTurno(value.turnoId, value.estabId,value.estabNombre, value.estatusId, value.estatusNombre, 
+                value.sesionId,value.sesionNombre, value.recursoId, value.recursoNombre, fecha, value.horaInicio, value.horaFin, hora_vista )
+                return true;
+              });
+            }else{
+              $('#turnos').append('<div class="row"><div class="col"><h5>No hay turnos disponibles</h5></div></div>');
+              return true;
+            }
+          },
+          error: function (data) {
+                console.error(data);
+                return false;
           }
-            
         });
     }
-    function muestraTurno(turnoId, estabId,estabNombre, estatusId, estatusNombre, 
+    function muestraTurno(turnoId, ESTABID,estabNombre, estatusId, estatusNombre, 
                         sesionId, sesionNombre, recursoId, recursoNombre, fecha, horaInicio, horaFin, hora_vista) {
       var html='';
             html+='<div id="turno'+turnoId+'"class="turno '+estatusNombre+'">';
